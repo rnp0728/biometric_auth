@@ -1,3 +1,5 @@
+import 'package:biometric_auth/success_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
@@ -15,7 +17,7 @@ class _FingerprintAuthState extends State<FingerprintAuth> {
   bool _canCheckBiometric = false;
   late List<BiometricType> _availableBiometric;
 
-  Future<void> _authenticate() async {
+  Future<bool> _authenticate() async {
     bool authenticated = false;
 
     try {
@@ -35,6 +37,7 @@ class _FingerprintAuthState extends State<FingerprintAuth> {
           authenticated ? "Authorized success" : "Failed to authenticate";
       print(authorized);
     });
+    return authenticated;
   }
 
   Future<void> _checkBiometric() async {
@@ -110,7 +113,12 @@ class _FingerprintAuthState extends State<FingerprintAuth> {
                     margin: const EdgeInsets.symmetric(vertical: 15.0),
                     width: double.infinity,
                     child: FloatingActionButton(
-                      onPressed: _authenticate,
+                      onPressed: () async {
+                        bool navigate = await _authenticate();
+                        if(navigate){
+                          Navigator.of(context).push(CupertinoPageRoute(builder: (context) => const SuccessPage(),));
+                        }
+                      },
                       elevation: 0.0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
